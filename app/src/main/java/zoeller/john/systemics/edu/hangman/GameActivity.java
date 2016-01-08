@@ -35,21 +35,17 @@ public class GameActivity extends AppCompatActivity {
 
     private AlertDialog helpAlert;
 
-    //body part images
-    private ImageView[] bodyParts;
-    //number of body parts
-    private int numParts=6;
-    //current part - will increment when wrong answers are chosen
-    private int currPart;
-    //number of characters in current word
-    private int numChars;
-    //number correctly guessed
-    private int numCorr;
+
+    private ImageView[] bodyParts;      // Create a an ImageView for the body part images
+    private int numParts=6;             // Set the number of body parts = 6
+    private int currPart;               // Current part - will increment when wrong answers are chosen (0 = head)
+    private int numChars;               // Number of characters in current word
+    private int numCorr;                // Number correctly guessed
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_game);
+        super.onCreate(savedInstanceState);                     // Calls android.app.Activity
+        setContentView(R.layout.activity_game);                 // Set screen view to gameplay (gallows) screen
         // Turn on the action bar
         /*
         This currently causes an ERROR on the PHONE
@@ -57,20 +53,15 @@ public class GameActivity extends AppCompatActivity {
         and generates a system error
         This is used to access the HELP screen
          */
-        //getActionBar().setDisplayHomeAsUpEnabled(true);
+        //getActionBar().setDisplayHomeAsUpEnabled(true);       // Turn on the screen's Action Bar
 
         // Read answer words from the array
         Resources res = getResources();
-        words = res.getStringArray(R.array.words);
+        words = res.getStringArray(R.array.words);              // Get values from string-array = names in arrays.xml
+        rand = new Random();                                    // Get a new random word
+        currWord = "";                                          // Clear out the current word variable
 
-        rand = new Random();        // Get a new random word
-        currWord = "";              // Clear out the current word variable
-
-        wordLayout = (LinearLayout)findViewById(R.id.word);     //
-
-        letters = (GridView)findViewById(R.id.letters);
-
-        bodyParts = new ImageView[numParts];
+        bodyParts = new ImageView[numParts];                    // numParts = 6
         bodyParts[0] = (ImageView)findViewById(R.id.head);
         bodyParts[1] = (ImageView)findViewById(R.id.body);
         bodyParts[2] = (ImageView)findViewById(R.id.arm1);
@@ -78,49 +69,44 @@ public class GameActivity extends AppCompatActivity {
         bodyParts[4] = (ImageView)findViewById(R.id.leg1);
         bodyParts[5] = (ImageView)findViewById(R.id.leg2);
 
+        wordLayout = (LinearLayout)findViewById(R.id.word);     // Get the word
+
+        letters = (GridView)findViewById(R.id.letters);
+
+
         playGame();
 
     }
 
     private void playGame() {
 
-        currPart = 0;                   // Set the current body part to 0 (head)
-        numChars = currWord.length();   // Set the number of characters to the length of the current word
-        numCorr = 0;                    //
-
-        // Hide the body parts at the beginning of the game
-        for (int p = 0; p < numParts; p++) {
-        bodyParts[p].setVisibility(View.INVISIBLE);
+        currPart = 0;                                   // Set the current body part to 0 (head)...
+        for (int p = 0; p < numParts; p++) {            // Make int p 0, then increment until = numParts = 6
+        bodyParts[p].setVisibility(View.INVISIBLE);     // Set the visibility of body parts 0, 1, 2, 3,  ++ to invisible
         }
 
-        //Choose a new word from the array at random
-        String newWord = words[rand.nextInt(words.length)];
+        String newWord = words[rand.nextInt(words.length)];                             // Choose a word from the array at random
 
-        // Make sure not to choose the same word twice
-        while(newWord.equals(currWord)) newWord = words[rand.nextInt(words.length)];
+        while(newWord.equals(currWord)) newWord = words[rand.nextInt(words.length)];    // Make sure not to choose the same word twice
 
-        //Set the current word to the selected newWord
-        currWord = newWord;
+        currWord = newWord;                                                             // Set currWord to the selected newWord
 
-        // Create views for the characters in currWord
-        charViews = new TextView[currWord.length()];
+        charViews = new TextView[currWord.length()];                                    // Create views for the characters in currWord
 
-        //Remove all views
-        wordLayout.removeAllViews();
+        wordLayout.removeAllViews();                                                    // Remove all views
 
-        // Iterate over each letter of the answer,
-        // Create a text view for each letter,
-        // Set the text view's text to the current letter
-        // and set the display properties on the text view and add it to the layout.
-        for (int c = 0; c < currWord.length(); c++) {
-            charViews[c] = new TextView(this);
-            charViews[c].setText("" + currWord.charAt(c));
+        numChars = currWord.length();                   // Set the number of characters to the length of the current word
+        numCorr = 0;                                    // Set the number of correctly guessed letters
+
+        for (int c = 0; c < currWord.length(); c++) {           // Make int c, then increment until c = currWord length
+            charViews[c] = new TextView(this);                  // Create a new TextView for each letter c
+            charViews[c].setText("" + currWord.charAt(c));      // Set the TextView to the character at the location c of currWord
             charViews[c].setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
             charViews[c].setGravity(Gravity.CENTER);
             charViews[c].setTextColor(Color.WHITE);
-            charViews[c].setBackgroundResource(R.drawable.letter_bg);
-            //add to layout
-            wordLayout.addView(charViews[c]);
+            charViews[c].setBackgroundResource(R.drawable.letter_bg);                   // Make charView background letter_bg.xml
+
+            wordLayout.addView(charViews[c]);                                           // Add word charViews to layout
         }
 
         // Reset adapter
@@ -129,79 +115,71 @@ public class GameActivity extends AppCompatActivity {
 
         }
 
-    public void letterPressed(View view) {
-    //user has pressed a letter to guess
+    public void letterPressed(View view) {                  // User has pressed a letter to guess...
 
-        // Determine which character button the user has pressed
-        // First, capture the the character button input from the screen
-        String ltr=((TextView)view).getText().toString();
+        String ltr=((TextView)view).getText().toString();   // First, capture the the character button input from the screen
+        char letterChar = ltr.charAt(0);                    // Next, take only the first character from the string
+        view.setEnabled(false);                             // Disable the button...
+        view.setBackgroundResource(R.drawable.letter_dn);   // Change the background color to the color in letter_dn.xml (black)
 
-        // Next, take only the first character from the string
-        char letterChar = ltr.charAt(0);
+        boolean correct = false;                            // Set boolean correct to "false" before testing the pressed letter
 
-        view.setEnabled(false);                             // Turn off the each letter as it is guessed
-        view.setBackgroundResource(R.drawable.letter_dn);   // Change the background
-
-        boolean correct = false;
-
-        for(int k = 0; k < currWord.length(); k++) {
-            if (currWord.charAt(k) == letterChar) {
-                correct = true;
-                numCorr++;
-                charViews[k].setTextColor(Color.BLACK);
+        for(int k = 0; k < currWord.length(); k++) {        // As long as k is less than currWord length, then increase k
+            if (currWord.charAt(k) == letterChar) {         // If the letter located at position k same as letterChar (last pressed letter)
+                correct = true;                             // Set boolean correct to "true"
+                numCorr++;                                  // Increase numCorr (number of correctly guessed letters)
+                charViews[k].setTextColor(Color.BLACK);     // Change the text color to black
             }
         }
 
-        if (correct) {
+        if (correct) {                                          //
             //correct guess
         }
 
-        else if (currPart < numParts) {
-            //some guesses left
-            bodyParts[currPart].setVisibility(View.VISIBLE);
-            currPart++;
+        else if (currPart < numParts) {                         // If there are some guesses left...
+            bodyParts[currPart].setVisibility(View.VISIBLE);    // Make the current part visible...
+            currPart++;                                         // Increase the value stored in currPart
         }
 
-        else{
-            // User has lost, call disableBtns method
-            disableBtns();
+        else{                                                                       // There are no guesses left...
 
-            // User has lost, display Alert Dialog
-            AlertDialog.Builder loseBuild = new AlertDialog.Builder(this);
-            loseBuild.setTitle("OOPS");
-            loseBuild.setMessage("You lose!\n\nThe answer was:\n\n"+currWord);
+            disableBtns();                                                          // Call disableBtns method...
+
+            AlertDialog.Builder loseBuild = new AlertDialog.Builder(this);          // Create an AlertDialog...
+            loseBuild.setTitle("HA HA HA HA");                                      // AlertDialog title text...
+            loseBuild.setMessage("You lose!\n\nThe answer was:\n\n"+currWord);      // AlertDialog message...
             loseBuild.setPositiveButton("Play Again", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
+                public void onClick(DialogInterface dialog, int id) {              // Positive button recall playGame()
                     GameActivity.this.playGame();
                     }});
 
             loseBuild.setNegativeButton("Exit", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
+                public void onClick(DialogInterface dialog, int id) {                    // Negative button terminates application
                     GameActivity.this.finish();
                     }});
 
-            loseBuild.show();
+            loseBuild.show();                                                       // Show the AlertDialog
         }
 
-        if (numCorr == numChars) {
-            // Disable Buttons
-            disableBtns();
+        if (numCorr == numChars) {              // If the number of correct guesses = number of characters in word...
 
-            // Display Alert Dialog
-            AlertDialog.Builder winBuild = new AlertDialog.Builder(this);
-            winBuild.setTitle("YAY");
-            winBuild.setMessage("You win!\n\nThe answer was:\n\n" + currWord);
+            disableBtns();                      // Call disableBtns()...
+
+            AlertDialog.Builder winBuild = new AlertDialog.Builder(this);           // Create an AlertDialog...
+            winBuild.setTitle("Drat, give me another chance");                      // AlertDialog title text...
+            winBuild.setMessage("You win!\n\nThe answer was:\n\n" + currWord);      // AlertDialog message...
+
             winBuild.setPositiveButton("Play Again", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
+                public void onClick(DialogInterface dialog, int id) {               // Positive button recall playGame()
                     GameActivity.this.playGame();
                     }});
 
             winBuild.setNegativeButton("Exit", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {
-                    GameActivity.this.finish();
+                    GameActivity.this.finish();                                     // Negative button terminates application
                     }});
 
-            winBuild.show();
+            winBuild.show();                                                        // Show the AlertDialog
         }
     }
 
@@ -245,5 +223,4 @@ public class GameActivity extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
-
 }
