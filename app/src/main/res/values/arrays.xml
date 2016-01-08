@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="words">
+        <item>NINJA</item>
+        <item>SWORD</item>
+        <item>SAMURAI</item>
+        <item>KNIFE</item>
+        <item>STAR</item>
+    </string-array>
+</resources>

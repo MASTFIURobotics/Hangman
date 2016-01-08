@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Hangman</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_game">GameActivity</string>
+    <string name="gallows">The Gallows</string>
+    <string name="head">The Head</string>
+    <string name="body">The Body</string>
+    <string name="arm">An Arm</string>
+    <string name="leg">A Leg</string>
+</resources>
